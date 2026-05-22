@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursing Test Series - 1 to 96</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 20px; text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 30px; }
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+            gap: 15px; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .test-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            aspect-ratio: 1; 
+            background: #4361ee; 
+            color: white; 
+            text-decoration: none; 
+            font-weight: bold; 
+            border-radius: 12px; 
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .test-btn:hover { background: #3a56d4; transform: scale(1.1); box-shadow: 0 5px 15px rgba(67,97,238,0.4); }
+    </style>
+</head>
+<body>
+
+    <h1>📋 Nursing Quiz Dashboard (1 - 96)</h1>
+    <p style="color: #666; margin-bottom: 20px;">Apna test shuru karne ke liye number par click karein:</p>
+
+    <div class="grid-container" id="buttonGrid">
+        </div>
+
+    <script>
+        const grid = document.getElementById('buttonGrid');
+        // 1 se 96 tak loop chala kar buttons banana
+        for (let i = 1; i <= 96; i++) {
+            const btn = document.createElement('a');
+            btn.href = `test${i}.html`; // File ka naam test1.html, test2.html hona chahiye
+            btn.className = 'test-btn';
+            btn.innerHTML = `Test ${i}`;
+            grid.appendChild(btn);
+        }
+    </script>
+
+</body>
+</html>
