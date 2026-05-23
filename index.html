@@ -3,35 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NORCET Warriors Premium</title>
+    <title>NORCET Warriors Portal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --p-color: #00d2ff; --s-color: #3a7bd5; --bg: #0f172a; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
-        
-        .header { text-align: center; padding: 30px 0; background: linear-gradient(135deg, var(--p-color), var(--s-color)); border-radius: 20px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
-        
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        
-        .test-card { 
-            background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 15px; 
-            text-align: center; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
+        :root { 
+            --primary: #2563eb; 
+            --bg-light: #f1f5f9; 
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
         }
-        .test-card:hover { transform: translateY(-5px); border-color: var(--p-color); background: #334155; }
-        .test-card h3 { margin: 0; font-size: 16px; color: #f8fafc; }
-        .test-card p { font-size: 12px; color: #94a3b8; margin: 5px 0 0; }
-        
-        #denied { text-align: center; margin-top: 100px; color: #ff4757; }
-        .lock-icon { font-size: 50px; margin-bottom: 10px; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-light); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px; /* Laptop par width control karne ke liye */
+        }
+
+        .header { 
+            text-align: center; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            color: white;
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 26px; font-weight: 800; }
+
+        /* Single Row Layout (Ek row mein ek) */
+        .grid-container { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px; 
+        }
+
+        .test-card { 
+            background: var(--card-bg); 
+            border: 1px solid #e2e8f0; 
+            padding: 18px; 
+            border-radius: 15px; 
+            text-align: left; /* Left align for professional look */
+            transition: all 0.2s ease; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .test-card:hover { 
+            transform: scale(1.01); 
+            border-color: var(--primary); 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .test-card h3 { 
+            margin: 0; 
+            font-size: 18px; 
+            color: var(--text-main); 
+        }
+
+        /* Go Button Style */
+        .start-btn {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        #denied { text-align: center; margin-top: 100px; color: #dc2626; }
     </style>
 </head>
 <body>
 
-<div id="access-granted" style="display:none;">
+<div class="container" id="access-granted" style="display:none;">
     <div class="header">
         <h1>NORCET WARRIORS</h1>
-        <p>Premium Test Portal</p>
+        <p style="opacity: 0.9; margin-top: 5px;">Premium Learning Portal</p>
     </div>
     
     <div class="grid-container" id="test-list">
@@ -39,10 +99,9 @@
 </div>
 
 <div id="denied" style="display:none;">
-    <div class="lock-icon">🔒</div>
-    <h2>Access Denied</h2>
-    <p id="my-id" style="color: #94a3b8;"></p>
-    <p>Contact Admin to get Access</p>
+    <h2>🔒 Access Denied</h2>
+    <p id="my-id"></p>
+    <p>Please use Telegram App to access.</p>
 </div>
 
 <script>
@@ -50,6 +109,7 @@
     tg.ready();
     tg.expand();
 
+    // Aapki ID check
     const allowedUsers = [5571185892];
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
@@ -58,19 +118,18 @@
         generateTestList();
     } else {
         document.getElementById('denied').style.display = 'block';
-        document.getElementById('my-id').innerText = "Your ID: " + (userId || "Not Detected");
+        document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
     function generateTestList() {
         const container = document.getElementById('test-list');
-        // 1 se 96 tak cards banane ke liye loop
         for (let i = 1; i <= 96; i++) {
             const card = document.createElement('div');
             card.className = 'test-card';
             card.onclick = () => { window.location.href = `test${i}.html`; };
             card.innerHTML = `
                 <h3>Test ${i}</h3>
-                <p>50 Questions</p>
+                <div class="start-btn">Start Test →</div>
             `;
             container.appendChild(card);
         }
