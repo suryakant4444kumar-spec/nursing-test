@@ -16,38 +16,24 @@
         body { 
             font-family: 'Segoe UI', sans-serif; 
             background-color: var(--bg-light); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 0;
+            margin: 0; padding: 0;
             overflow-x: hidden;
         }
 
-        /* Main List View */
-        .container {
-            width: 100%;
-            max-width: 800px; 
-            margin: auto;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
+        /* Main View */
         .header { 
             text-align: center; 
             padding: 40px 20px; 
             background: linear-gradient(135deg, #3b82f6, #2563eb); 
             color: white;
             border-radius: 0 0 25px 25px; 
-            margin-bottom: 25px; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            margin-bottom: 20px; 
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
         }
 
-        h1 { margin: 0; font-size: 26px; font-weight: 800; }
-
-        .grid-container { 
-            display: flex;
-            flex-direction: column;
-            gap: 12px; 
-        }
+        .container { width: 100%; max-width: 800px; margin: auto; padding: 15px; box-sizing: border-box; }
+        
+        .grid-container { display: flex; flex-direction: column; gap: 12px; }
 
         .test-card { 
             background: var(--card-bg); 
@@ -59,10 +45,7 @@
             justify-content: space-between;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             cursor: pointer;
-            transition: transform 0.2s;
         }
-
-        .test-card:active { transform: scale(0.98); }
 
         .start-btn {
             background: #eff6ff;
@@ -70,26 +53,19 @@
             padding: 8px 15px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 14px;
         }
 
-        /* Full Screen Test Container (Iframe) */
+        /* Iframe Container (Full Screen Test) */
         #test-frame-container {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: white;
             z-index: 9999;
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
 
         #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
     </style>
@@ -99,11 +75,10 @@
 <div id="main-view">
     <div class="header">
         <h1>NORCET WARRIORS</h1>
-        <p style="opacity: 0.9; margin-top: 5px;">Premium Test Portal</p>
+        <p>Premium Learning Portal</p>
     </div>
     <div class="container">
-        <div class="grid-container" id="test-list">
-            </div>
+        <div class="grid-container" id="test-list"></div>
     </div>
 </div>
 
@@ -114,8 +89,8 @@
 <div id="denied" style="display:none;">
     <div style="font-size: 50px;">🔒</div>
     <h2>Access Denied</h2>
-    <p id="my-id" style="color: #64748b; font-weight: bold;"></p>
-    <p>Contact Admin to get access.</p>
+    <p id="my-id" style="font-weight: bold; color: #64748b;"></p>
+    <p>Please contact Admin for access.</p>
 </div>
 
 <script>
@@ -123,65 +98,71 @@
     tg.ready();
     tg.expand();
 
-    // --- 1. SETTINGS: Allowed Users ---
+    // 1. SETTINGS: Allowed User IDs
     const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-    // --- 2. BACK BUTTON SETUP ---
+    // 2. BACK BUTTON & POPUP CONTROL
     const backButton = tg.BackButton;
-    backButton.hide(); // Home page par hide rakhein
+    
+    // Popup ko zabardasti disable karne ke liye
+    tg.disableClosingConfirmation();
+    
+    // Browser popup rokne ke liye logic
+    window.addEventListener('beforeunload', (e) => {
+        e.stopImmediatePropagation();
+    }, true);
 
-    // --- 3. ACCESS CHECK ---
+    // 3. ACCESS CHECK
     if (userId && allowedUsers.includes(userId)) {
         document.getElementById('main-view').style.display = 'block';
         generateTestList();
     } else {
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('denied').style.display = 'block';
-        document.getElementById('my-id').innerText = "Aapki ID: " + (userId || "Not Detected");
+        document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
-    // --- 4. FUNCTIONS ---
-
-    // Test List Banane ke liye
+    // 4. FUNCTIONS
     function generateTestList() {
         const container = document.getElementById('test-list');
         for (let i = 1; i <= 96; i++) {
             const card = document.createElement('div');
             card.className = 'test-card';
             card.onclick = () => openTest(`test${i}.html`);
-            card.innerHTML = `
-                <h3>Test ${i}</h3>
-                <div class="start-btn">Start Test →</div>
-            `;
+            card.innerHTML = `<h3>Test ${i}</h3><div class="start-btn">Start Test →</div>`;
             container.appendChild(card);
         }
     }
 
-    // Test kholne ke liye (Iframe use karke)
     function openTest(url) {
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('test-frame-container').style.display = 'block';
-        document.getElementById('test-iframe').src = url;
+        const iframe = document.getElementById('test-iframe');
+        iframe.src = url;
         
-        // Telegram ka Back Arrow dikhao
+        // Telegram Back Button dikhao
         backButton.show();
+
+        // Iframe ke andar ke popup ko neutralize karna
+        iframe.onload = function() {
+            try {
+                iframe.contentWindow.onbeforeunload = null;
+                if(iframe.contentWindow.Telegram) {
+                    iframe.contentWindow.Telegram.WebApp.disableClosingConfirmation();
+                }
+            } catch (e) {}
+        };
     }
 
-    // Jab student upar wala Back Arrow dabaye
+    // Back Button click behavior
     backButton.onClick(() => {
-        // Test band karo aur wapas list dikhao
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
         document.getElementById('test-iframe').src = ""; 
-        
-        // Back button chhupao kyunki hum home par hain
         backButton.hide();
     });
 
-    // NOTE: Humne tg.enableClosingConfirmation() hata diya hai 
-    // taaki woh "Stay/Leave" wala error na aaye.
 </script>
-
 </body>
 </html>
