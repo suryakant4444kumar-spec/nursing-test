@@ -2,86 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NORCET Warriors Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --p-color: #248bca; --bg: #f4f7f9; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; display: none; }
-        .header { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; padding: 20px; text-align: center; border-radius: 0 0 20px 20px; }
-        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .test-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e6ed; }
-        .btn { background: var(--p-color); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        :root { --p-color: #00d2ff; --s-color: #3a7bd5; --bg: #0f172a; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
         
-        /* Question Section */
-        #quiz-section { display: none; padding: 20px; background: white; min-height: 100vh; }
-        .question { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        .option { display: block; padding: 12px; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 8px; cursor: pointer; }
-        .option:hover { background: #f0f7ff; }
+        .header { text-align: center; padding: 30px 0; background: linear-gradient(135deg, var(--p-color), var(--s-color)); border-radius: 20px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        
+        .test-card { 
+            background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 15px; 
+            text-align: center; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
+        }
+        .test-card:hover { transform: translateY(-5px); border-color: var(--p-color); background: #334155; }
+        .test-card h3 { margin: 0; font-size: 16px; color: #f8fafc; }
+        .test-card p { font-size: 12px; color: #94a3b8; margin: 5px 0 0; }
+        
+        #denied { text-align: center; margin-top: 100px; color: #ff4757; }
+        .lock-icon { font-size: 50px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="main-menu">
-        <div class="header">
-            <h1>NORCET WARRIORS</h1>
-            <p>Select Your Test</p>
+<div id="access-granted" style="display:none;">
+    <div class="header">
+        <h1>NORCET WARRIORS</h1>
+        <p>Premium Test Portal</p>
+    </div>
+    
+    <div class="grid-container" id="test-list">
         </div>
-        <div class="container">
-            <div class="test-card">
-                <div><h3>Nursing Test - 01</h3><p>50 Questions</p></div>
-                <button class="btn" onclick="startTest()">Start</button>
-            </div>
-            </div>
-    </div>
+</div>
 
-    <div id="quiz-section">
-        <button onclick="location.reload()" style="margin-bottom:20px;">⬅ Back</button>
-        <div class="question" id="q-text">1. Loading question...</div>
-        <div id="options-container"></div>
-    </div>
+<div id="denied" style="display:none;">
+    <div class="lock-icon">🔒</div>
+    <h2>Access Denied</h2>
+    <p id="my-id" style="color: #94a3b8;"></p>
+    <p>Contact Admin to get Access</p>
+</div>
 
-    <div id="denied" style="display:none; text-align:center; padding:50px;">
-        <h2 style="color:red;">Access Denied 🔒</h2>
-        <p id="my-id"></p>
-    </div>
-
-    <script>
+<script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // ✅ ID ALLOW LIST (Aapki ID yahan set hai)
     const allowedUsers = [5571185892];
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
     if (userId && allowedUsers.includes(userId)) {
-        // Agar ID match hoti hai toh menu dikhao
-        document.getElementById('main-menu').style.display = 'block';
-        document.getElementById('denied').style.display = 'none';
+        document.getElementById('access-granted').style.display = 'block';
+        generateTestList();
     } else {
-        // Agar ID match nahi hoti toh Access Denied dikhao
-        document.getElementById('main-menu').style.display = 'none';
         document.getElementById('denied').style.display = 'block';
-        document.getElementById('my-id').innerText = "Aapki ID: " + (userId || "Not Found");
+        document.getElementById('my-id').innerText = "Your ID: " + (userId || "Not Detected");
     }
 
-    function startTest() {
-        document.getElementById('main-menu').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
+    function generateTestList() {
+        const container = document.getElementById('test-list');
+        // 1 se 96 tak cards banane ke liye loop
+        for (let i = 1; i <= 96; i++) {
+            const card = document.createElement('div');
+            card.className = 'test-card';
+            card.onclick = () => { window.location.href = `test${i}.html`; };
+            card.innerHTML = `
+                <h3>Test ${i}</h3>
+                <p>50 Questions</p>
+            `;
+            container.appendChild(card);
+        }
     }
+</script>
 
-    function showQuestion() {
-        document.getElementById('q-text').innerText = "1. A patient presents with rough, dry, scaly skin patches. Which nutrient?";
-        const options = ["Vitamin A", "Vitamin C", "Iron", "Vitamin D"];
-        let html = "";
-        options.forEach(opt => {
-            html += `<div class="option" onclick="alert('Answer Saved!')">${opt}</div>`;
-        });
-        document.getElementById('options-container').innerHTML = html;
-    }
-    </script>
 </body>
 </html>
-
