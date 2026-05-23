@@ -6,36 +6,21 @@
     <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --primary: #2563eb; 
-            --bg-light: #f1f5f9; 
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-        }
-
+        :root { --primary: #2563eb; --bg-light: #f1f5f9; --card-bg: #ffffff; }
+        
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             overflow: hidden; background-color: var(--bg-light);
             font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Header View */
-        .header { 
-            text-align: center; 
-            padding: 40px 20px; 
-            background: linear-gradient(135deg, #3b82f6, #2563eb); 
-            color: white;
-            border-radius: 0 0 25px 25px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-        }
-
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 0 0 25px 25px; margin-bottom: 20px; }
         .container { width: 100%; max-width: 800px; margin: auto; padding: 15px; box-sizing: border-box; }
         .grid-container { display: flex; flex-direction: column; gap: 12px; }
-        .test-card { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 18px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        .test-card { background: white; border: 1px solid #e2e8f0; padding: 18px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .start-btn { background: #eff6ff; color: var(--primary); padding: 8px 15px; border-radius: 8px; font-weight: 600; }
 
-        /* Iframe Container Logic */
+        /* Iframe Container */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -43,16 +28,27 @@
             width: 100%; height: 100%;
             background: white;
             z-index: 9999;
-            overflow: hidden;
         }
 
-        /* Yahan -55px margin aur Fit-to-Width logic hai */
+        /* Margin Px wala hata diya gaya hai */
         iframe { 
             width: 100%; 
-            height: calc(100% + 55px); 
-            margin-top: -55px; 
+            height: 100%; 
             border: none;
             display: block;
+        }
+
+        /* --- SMART BLOCKER LAYER --- */
+        /* Yeh ek invisible deewar hai jo upar ke 60px area ko block karegi */
+        .blocker-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px; /* Admin bar jitni height */
+            z-index: 10000;
+            background: transparent;
+            pointer-events: all; /* Yeh click ko iframe tak nahi pahunchne dega */
         }
 
         #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
@@ -71,22 +67,19 @@
 </div>
 
 <div id="test-frame-container">
+    <div class="blocker-layer"></div>
     <iframe id="test-iframe" src=""></iframe>
 </div>
 
 <div id="denied" style="display:none;">
-    <div style="font-size: 50px;">🔒</div>
-    <h2>Access Denied</h2>
-    <p id="my-id" style="font-weight: bold; color: #64748b;"></p>
-    <p>Please contact Admin for access.</p>
+    <h2>🔒 Access Denied</h2>
+    <p id="my-id"></p>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    tg.ready(); tg.expand();
 
-    // 1. SETTINGS
     const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
     const totalTests = 147; 
@@ -94,7 +87,6 @@
     const backButton = tg.BackButton;
     tg.disableClosingConfirmation();
 
-    // 2. ACCESS CHECK
     if (userId && allowedUsers.includes(userId)) {
         document.getElementById('main-view').style.display = 'block';
         generateTestList();
@@ -104,7 +96,6 @@
         document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
-    // 3. GENERATE LIST
     function generateTestList() {
         const container = document.getElementById('test-list');
         for (let i = 1; i <= totalTests; i++) {
@@ -116,26 +107,20 @@
         }
     }
 
-    // 4. OPEN TEST (Smart Detection & Fit)
     function openTest(num) {
         const iframe = document.getElementById('test-iframe');
-        const container = document.getElementById('test-frame-container');
-        const mainView = document.getElementById('main-view');
-
-        mainView.style.display = 'none';
-        container.style.display = 'block';
+        document.getElementById('main-view').style.display = 'none';
+        document.getElementById('test-frame-container').style.display = 'block';
         
         const url1 = `test${num}.html`;
         iframe.src = url1;
 
-        // Space/No-space smart fix
         fetch(url1).then(r => { if(!r.ok) iframe.src = `test ${num}.html`; })
                    .catch(() => iframe.src = `test ${num}.html`);
 
         backButton.show();
     }
 
-    // Back Button Logic
     backButton.onClick(() => {
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
