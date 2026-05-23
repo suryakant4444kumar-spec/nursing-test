@@ -47,38 +47,40 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
 
-        // 📝 ID ALLOW LIST (Yahan apni ID dalna na bhulein)
-        const allowedUsers = [5571185892]; 
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+    // ✅ ID ALLOW LIST (Aapki ID yahan set hai)
+    const allowedUsers = [5571185892];
+    const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        if (userId && allowedUsers.includes(userId)) {
-            document.body.style.display = 'block';
-        } else {
-            document.body.style.display = 'block';
-            document.getElementById('main-menu').style.display = 'none';
-            document.getElementById('denied').style.display = 'block';
-            document.getElementById('my-id').innerText = "Aapki ID: " + (userId || "Not Found");
-        }
+    if (userId && allowedUsers.includes(userId)) {
+        // Agar ID match hoti hai toh menu dikhao
+        document.getElementById('main-menu').style.display = 'block';
+        document.getElementById('denied').style.display = 'none';
+    } else {
+        // Agar ID match nahi hoti toh Access Denied dikhao
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('denied').style.display = 'block';
+        document.getElementById('my-id').innerText = "Aapki ID: " + (userId || "Not Found");
+    }
 
-        function startTest() {
-            document.getElementById('main-menu').style.display = 'none';
-            document.getElementById('quiz-section').style.display = 'block';
-            showQuestion();
-        }
+    function startTest() {
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        showQuestion();
+    }
 
-        function showQuestion() {
-            document.getElementById('q-text').innerText = "1. A patient presents with rough, dry, scaly skin patches. Which nutrient deficiency is likely?";
-            const options = ["Vitamin A", "Vitamin C", "Iron", "Vitamin D"];
-            let html = "";
-            options.forEach(opt => {
-                html += `<div class="option" onclick="alert('Answer Saved!')">${opt}</div>`;
-            });
-            document.getElementById('options-container').innerHTML = html;
-        }
+    function showQuestion() {
+        document.getElementById('q-text').innerText = "1. A patient presents with rough, dry, scaly skin patches. Which nutrient?";
+        const options = ["Vitamin A", "Vitamin C", "Iron", "Vitamin D"];
+        let html = "";
+        options.forEach(opt => {
+            html += `<div class="option" onclick="alert('Answer Saved!')">${opt}</div>`;
+        });
+        document.getElementById('options-container').innerHTML = html;
+    }
     </script>
 </body>
 </html>
