@@ -20,6 +20,7 @@
             overflow-x: hidden;
         }
 
+        /* Header Styling */
         .header { 
             text-align: center; 
             padding: 40px 20px; 
@@ -54,7 +55,7 @@
             font-weight: 600;
         }
 
-        /* Iframe Container */
+        /* Iframe Container & Admin Bar Hiding Logic */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -62,9 +63,16 @@
             width: 100%; height: 100%;
             background: white;
             z-index: 9999;
+            overflow: hidden; /* Bahar nikla hua part chhupane ke liye */
         }
 
-        iframe { width: 100%; height: 100%; border: none; }
+        /* Magic: Margin-top se admin bar upar chali jayegi */
+        iframe { 
+            width: 100%; 
+            height: calc(100% + 45px); /* Height badhayi taaki niche gap na aaye */
+            margin-top: -45px; /* Adjust karein agar bar zyada badi ho */
+            border: none; 
+        }
 
         #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
     </style>
@@ -98,9 +106,9 @@
     tg.expand();
 
     // 1. SETTINGS
-    const allowedUsers = [5571185892]; // Aapki ID yahan hai
+    const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
-    const totalTests = 147; // Aapne 147 tests kiye hain
+    const totalTests = 147; 
 
     const backButton = tg.BackButton;
     tg.disableClosingConfirmation();
@@ -115,7 +123,7 @@
         document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
-    // 3. GENERATE LIST
+    // 3. GENERATE TEST LIST
     function generateTestList() {
         const container = document.getElementById('test-list');
         for (let i = 1; i <= totalTests; i++) {
@@ -127,7 +135,7 @@
         }
     }
 
-    // 4. SMART OPEN FUNCTION (Space & Case Sensitive detection)
+    // 4. OPEN TEST WITH SMART DETECTION
     function openTest(num) {
         const iframe = document.getElementById('test-iframe');
         const container = document.getElementById('test-frame-container');
@@ -136,11 +144,10 @@
         mainView.style.display = 'none';
         container.style.display = 'block';
         
-        // Browser ko batana ki ye URL try kare
         const url1 = `test${num}.html`;
         iframe.src = url1;
 
-        // Fetch check: Agar bina space wali file nahi mili, toh space wali try kare
+        // Agar bina space wali file nahi milti (404), toh space wali load karega
         fetch(url1).then(response => {
             if (!response.ok) {
                 iframe.src = `test ${num}.html`; 
