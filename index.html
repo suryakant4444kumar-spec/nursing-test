@@ -6,23 +6,92 @@
     <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg-light: #f1f5f9; --card-bg: #ffffff; --text-main: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-light); margin: 0; padding: 0; overflow-x: hidden; }
-        
-        /* Main Container */
-        .container { padding: 15px; max-width: 800px; margin: auto; }
-        .header { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 0 0 25px 25px; margin-bottom: 20px; }
-        
-        /* Test Cards */
-        .grid-container { display: flex; flex-direction: column; gap: 12px; }
-        .test-card { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 18px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-        .start-btn { background: #eff6ff; color: var(--primary); padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+        :root { 
+            --primary: #2563eb; 
+            --bg-light: #f1f5f9; 
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
 
-        /* Full Screen Test View */
-        #test-frame-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; }
-        iframe { width: 100%; height: 100%; border: none; }
-        
-        #denied { text-align: center; margin-top: 100px; color: #dc2626; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-light); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Main List View */
+        .container {
+            width: 100%;
+            max-width: 800px; 
+            margin: auto;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .header { 
+            text-align: center; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            color: white;
+            border-radius: 0 0 25px 25px; 
+            margin-bottom: 25px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 26px; font-weight: 800; }
+
+        .grid-container { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px; 
+        }
+
+        .test-card { 
+            background: var(--card-bg); 
+            border: 1px solid #e2e8f0; 
+            padding: 18px; 
+            border-radius: 15px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .test-card:active { transform: scale(0.98); }
+
+        .start-btn {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Full Screen Test Container (Iframe) */
+        #test-frame-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
     </style>
 </head>
 <body>
@@ -30,10 +99,11 @@
 <div id="main-view">
     <div class="header">
         <h1>NORCET WARRIORS</h1>
-        <p>Premium Learning Portal</p>
+        <p style="opacity: 0.9; margin-top: 5px;">Premium Test Portal</p>
     </div>
     <div class="container">
-        <div class="grid-container" id="test-list"></div>
+        <div class="grid-container" id="test-list">
+            </div>
     </div>
 </div>
 
@@ -42,8 +112,10 @@
 </div>
 
 <div id="denied" style="display:none;">
-    <h2>🔒 Access Denied</h2>
-    <p id="my-id"></p>
+    <div style="font-size: 50px;">🔒</div>
+    <h2>Access Denied</h2>
+    <p id="my-id" style="color: #64748b; font-weight: bold;"></p>
+    <p>Contact Admin to get access.</p>
 </div>
 
 <script>
@@ -51,52 +123,64 @@
     tg.ready();
     tg.expand();
 
-    const allowedUsers = [5571185892];
+    // --- 1. SETTINGS: Allowed Users ---
+    const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-    // Back Button Logic
+    // --- 2. BACK BUTTON SETUP ---
     const backButton = tg.BackButton;
+    backButton.hide(); // Home page par hide rakhein
 
+    // --- 3. ACCESS CHECK ---
     if (userId && allowedUsers.includes(userId)) {
         document.getElementById('main-view').style.display = 'block';
         generateTestList();
     } else {
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('denied').style.display = 'block';
-        document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
+        document.getElementById('my-id').innerText = "Aapki ID: " + (userId || "Not Detected");
     }
 
+    // --- 4. FUNCTIONS ---
+
+    // Test List Banane ke liye
     function generateTestList() {
         const container = document.getElementById('test-list');
         for (let i = 1; i <= 96; i++) {
             const card = document.createElement('div');
             card.className = 'test-card';
             card.onclick = () => openTest(`test${i}.html`);
-            card.innerHTML = `<h3>Test ${i}</h3><div class="start-btn">Start Test →</div>`;
+            card.innerHTML = `
+                <h3>Test ${i}</h3>
+                <div class="start-btn">Start Test →</div>
+            `;
             container.appendChild(card);
         }
     }
 
-    // Naya function: Test ko usi page ke upar kholne ke liye
+    // Test kholne ke liye (Iframe use karke)
     function openTest(url) {
         document.getElementById('main-view').style.display = 'none';
         document.getElementById('test-frame-container').style.display = 'block';
         document.getElementById('test-iframe').src = url;
         
-        // Telegram Back Button Dikhao
+        // Telegram ka Back Arrow dikhao
         backButton.show();
     }
 
-    // Jab Back Button dabe
+    // Jab student upar wala Back Arrow dabaye
     backButton.onClick(() => {
+        // Test band karo aur wapas list dikhao
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
-        document.getElementById('test-iframe').src = ""; // Clear iframe
-        backButton.hide(); // Back button chhupao
+        document.getElementById('test-iframe').src = ""; 
+        
+        // Back button chhupao kyunki hum home par hain
+        backButton.hide();
     });
 
-    // Minimize rokne ke liye confirmation
-    tg.enableClosingConfirmation();
+    // NOTE: Humne tg.enableClosingConfirmation() hata diya hai 
+    // taaki woh "Stay/Leave" wala error na aaye.
 </script>
 
 </body>
