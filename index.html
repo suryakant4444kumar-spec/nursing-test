@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -17,10 +17,10 @@
             font-family: 'Segoe UI', sans-serif; 
             background-color: var(--bg-light); 
             margin: 0; padding: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* Screen ko hilne se rokne ke liye */
         }
 
-        /* Header Styling */
+        /* Header */
         .header { 
             text-align: center; 
             padding: 40px 20px; 
@@ -55,7 +55,7 @@
             font-weight: 600;
         }
 
-        /* Iframe Container & Admin Bar Hiding Logic */
+        /* Iframe Container */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -63,15 +63,17 @@
             width: 100%; height: 100%;
             background: white;
             z-index: 9999;
-            overflow: hidden; /* Bahar nikla hua part chhupane ke liye */
+            overflow: auto; /* Taki user scroll kar sake */
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Magic: Margin-top se admin bar upar chali jayegi */
+        /* Magic: Margin -50px for Admin Bar Hide */
         iframe { 
             width: 100%; 
-            height: calc(100% + 45px); /* Height badhayi taaki niche gap na aaye */
-            margin-top: -45px; /* Adjust karein agar bar zyada badi ho */
-            border: none; 
+            height: calc(100% + 50px); 
+            margin-top: -50px; 
+            border: none;
+            display: block;
         }
 
         #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
@@ -123,7 +125,7 @@
         document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
-    // 3. GENERATE TEST LIST
+    // 3. GENERATE LIST
     function generateTestList() {
         const container = document.getElementById('test-list');
         for (let i = 1; i <= totalTests; i++) {
@@ -135,7 +137,7 @@
         }
     }
 
-    // 4. OPEN TEST WITH SMART DETECTION
+    // 4. OPEN TEST
     function openTest(num) {
         const iframe = document.getElementById('test-iframe');
         const container = document.getElementById('test-frame-container');
@@ -147,35 +149,20 @@
         const url1 = `test${num}.html`;
         iframe.src = url1;
 
-        // Agar bina space wali file nahi milti (404), toh space wali load karega
-        fetch(url1).then(response => {
-            if (!response.ok) {
-                iframe.src = `test ${num}.html`; 
-            }
-        }).catch(() => {
-            iframe.src = `test ${num}.html`;
-        });
+        // Space/No-Space detection
+        fetch(url1).then(r => { if(!r.ok) iframe.src = `test ${num}.html`; })
+                   .catch(() => iframe.src = `test ${num}.html`);
 
         backButton.show();
-
-        iframe.onload = function() {
-            try {
-                iframe.contentWindow.onbeforeunload = null;
-                if(iframe.contentWindow.Telegram) {
-                    iframe.contentWindow.Telegram.WebApp.disableClosingConfirmation();
-                }
-            } catch (e) {}
-        };
     }
 
-    // Back button behavior
+    // Back Button
     backButton.onClick(() => {
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
         document.getElementById('test-iframe').src = ""; 
         backButton.hide();
     });
-
 </script>
 </body>
 </html>
