@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* Main View */
         .header { 
             text-align: center; 
             padding: 40px 20px; 
@@ -55,7 +54,6 @@
             font-weight: 600;
         }
 
-        /* Iframe Container (Full Screen Test) */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -98,22 +96,15 @@
     tg.ready();
     tg.expand();
 
-    // 1. SETTINGS: Allowed User IDs
+    // 1. SETTINGS
     const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+    const totalTests = 147; // Aapne 147 tests kiye hain
 
-    // 2. BACK BUTTON & POPUP CONTROL
     const backButton = tg.BackButton;
-    
-    // Popup ko zabardasti disable karne ke liye
     tg.disableClosingConfirmation();
-    
-    // Browser popup rokne ke liye logic
-    window.addEventListener('beforeunload', (e) => {
-        e.stopImmediatePropagation();
-    }, true);
 
-    // 3. ACCESS CHECK
+    // 2. ACCESS CHECK
     if (userId && allowedUsers.includes(userId)) {
         document.getElementById('main-view').style.display = 'block';
         generateTestList();
@@ -123,28 +114,46 @@
         document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
 
-    // 4. FUNCTIONS
+    // 3. GENERATE LIST
     function generateTestList() {
         const container = document.getElementById('test-list');
-        for (let i = 1; i <= 147; i++) {
+        for (let i = 1; i <= totalTests; i++) {
             const card = document.createElement('div');
             card.className = 'test-card';
-            card.onclick = () => openTest(`test${i}.html`);
+            card.onclick = () => openTest(i); 
             card.innerHTML = `<h3>Test ${i}</h3><div class="start-btn">Start Test →</div>`;
             container.appendChild(card);
         }
     }
 
-    function openTest(url) {
-        document.getElementById('main-view').style.display = 'none';
-        document.getElementById('test-frame-container').style.display = 'block';
+    // 4. SMART OPEN FUNCTION (Space & No-Space Detection)
+    function openTest(num) {
         const iframe = document.getElementById('test-iframe');
-        iframe.src = url;
+        const container = document.getElementById('test-frame-container');
+        const mainView = document.getElementById('main-view');
+
+        mainView.style.display = 'none';
+        container.style.display = 'block';
         
-        // Telegram Back Button dikhao
+        // Pehle bina space wala try karein
+        const url1 = `test${num}.html`;
+        const url2 = `test%20${num}.html`; // %20 matlab space
+
+        // Smart loading
+        iframe.src = url1;
+
+        // Agar file nahi milti toh dusra format try karne ka logic
+        // Note: Iframe 404 detect karna mushkil hota hai, isliye hum ek chhota fetch check laga sakte hain
+        fetch(url1).then(response => {
+            if (!response.ok) {
+                iframe.src = `test ${num}.html`; // Space wala version
+            }
+        }).catch(() => {
+            iframe.src = `test ${num}.html`;
+        });
+
         backButton.show();
 
-        // Iframe ke andar ke popup ko neutralize karna
         iframe.onload = function() {
             try {
                 iframe.contentWindow.onbeforeunload = null;
@@ -155,7 +164,6 @@
         };
     }
 
-    // Back Button click behavior
     backButton.onClick(() => {
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
