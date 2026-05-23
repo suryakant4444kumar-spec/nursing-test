@@ -14,13 +14,14 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-        .header { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 0 0 25px 25px; margin-bottom: 20px; }
-        .container { width: 100%; max-width: 800px; margin: auto; padding: 15px; box-sizing: border-box; }
-        .grid-container { display: flex; flex-direction: column; gap: 12px; }
-        .test-card { background: white; border: 1px solid #e2e8f0; padding: 18px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .start-btn { background: #eff6ff; color: var(--primary); padding: 8px 15px; border-radius: 8px; font-weight: 600; }
+        /* Header */
+        .header { text-align: center; padding: 30px 10px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 0 0 20px 20px; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .grid-container { display: flex; flex-direction: column; gap: 10px; }
+        .test-card { background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .start-btn { background: #eff6ff; color: var(--primary); padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; }
 
-        /* Iframe Container */
+        /* Test Container */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -28,30 +29,19 @@
             width: 100%; height: 100%;
             background: white;
             z-index: 9999;
+            overflow: hidden;
         }
 
-        /* Margin Px wala hata diya gaya hai */
+        /* Iframe Styling: Admin Bar Hide karne ke liye safe margin */
         iframe { 
             width: 100%; 
-            height: 100%; 
+            height: calc(100% + 45px); /* Sirf 45px badhaya hai taaki zyada zoom na ho */
+            margin-top: -45px; /* Admin bar ko upar bhej diya */
             border: none;
             display: block;
         }
 
-        /* --- SMART BLOCKER LAYER --- */
-        /* Yeh ek invisible deewar hai jo upar ke 60px area ko block karegi */
-        .blocker-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px; /* Admin bar jitni height */
-            z-index: 10000;
-            background: transparent;
-            pointer-events: all; /* Yeh click ko iframe tak nahi pahunchne dega */
-        }
-
-        #denied { text-align: center; margin-top: 100px; color: #dc2626; padding: 20px; }
+        #denied { text-align: center; margin-top: 100px; color: #dc2626; }
     </style>
 </head>
 <body>
@@ -67,7 +57,6 @@
 </div>
 
 <div id="test-frame-container">
-    <div class="blocker-layer"></div>
     <iframe id="test-iframe" src=""></iframe>
 </div>
 
@@ -82,7 +71,7 @@
 
     const allowedUsers = [5571185892]; 
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
-    const totalTests = 147; 
+    const totalTests = 147;
 
     const backButton = tg.BackButton;
     tg.disableClosingConfirmation();
@@ -91,7 +80,6 @@
         document.getElementById('main-view').style.display = 'block';
         generateTestList();
     } else {
-        document.getElementById('main-view').style.display = 'none';
         document.getElementById('denied').style.display = 'block';
         document.getElementById('my-id').innerText = "ID: " + (userId || "Not Detected");
     }
@@ -128,6 +116,5 @@
         backButton.hide();
     });
 </script>
-
 </body>
 </html>
