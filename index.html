@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -54,6 +54,7 @@
             font-weight: 600;
         }
 
+        /* Iframe Container */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -97,7 +98,7 @@
     tg.expand();
 
     // 1. SETTINGS
-    const allowedUsers = [5571185892]; 
+    const allowedUsers = [5571185892]; // Aapki ID yahan hai
     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
     const totalTests = 147; // Aapne 147 tests kiye hain
 
@@ -126,7 +127,7 @@
         }
     }
 
-    // 4. SMART OPEN FUNCTION (Space & No-Space Detection)
+    // 4. SMART OPEN FUNCTION (Space & Case Sensitive detection)
     function openTest(num) {
         const iframe = document.getElementById('test-iframe');
         const container = document.getElementById('test-frame-container');
@@ -135,18 +136,14 @@
         mainView.style.display = 'none';
         container.style.display = 'block';
         
-        // Pehle bina space wala try karein
+        // Browser ko batana ki ye URL try kare
         const url1 = `test${num}.html`;
-        const url2 = `test%20${num}.html`; // %20 matlab space
-
-        // Smart loading
         iframe.src = url1;
 
-        // Agar file nahi milti toh dusra format try karne ka logic
-        // Note: Iframe 404 detect karna mushkil hota hai, isliye hum ek chhota fetch check laga sakte hain
+        // Fetch check: Agar bina space wali file nahi mili, toh space wali try kare
         fetch(url1).then(response => {
             if (!response.ok) {
-                iframe.src = `test ${num}.html`; // Space wala version
+                iframe.src = `test ${num}.html`; 
             }
         }).catch(() => {
             iframe.src = `test ${num}.html`;
@@ -164,6 +161,7 @@
         };
     }
 
+    // Back button behavior
     backButton.onClick(() => {
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
