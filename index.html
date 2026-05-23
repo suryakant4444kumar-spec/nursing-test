@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>NORCET Warriors Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -13,14 +13,13 @@
             --text-main: #1e293b;
         }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: var(--bg-light); 
-            margin: 0; padding: 0;
-            overflow: hidden; /* Screen ko hilne se rokne ke liye */
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background-color: var(--bg-light);
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Header */
+        /* Header View */
         .header { 
             text-align: center; 
             padding: 40px 20px; 
@@ -32,30 +31,11 @@
         }
 
         .container { width: 100%; max-width: 800px; margin: auto; padding: 15px; box-sizing: border-box; }
-        
         .grid-container { display: flex; flex-direction: column; gap: 12px; }
+        .test-card { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 18px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        .start-btn { background: #eff6ff; color: var(--primary); padding: 8px 15px; border-radius: 8px; font-weight: 600; }
 
-        .test-card { 
-            background: var(--card-bg); 
-            border: 1px solid #e2e8f0; 
-            padding: 18px; 
-            border-radius: 15px; 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-
-        .start-btn {
-            background: #eff6ff;
-            color: var(--primary);
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        /* Iframe Container */
+        /* Iframe Container Logic */
         #test-frame-container {
             display: none;
             position: fixed;
@@ -63,15 +43,14 @@
             width: 100%; height: 100%;
             background: white;
             z-index: 9999;
-            overflow: auto; /* Taki user scroll kar sake */
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
         }
 
-        /* Magic: Margin -50px for Admin Bar Hide */
+        /* Yahan -55px margin aur Fit-to-Width logic hai */
         iframe { 
             width: 100%; 
-            height: calc(100% + 50px); 
-            margin-top: -50px; 
+            height: calc(100% + 55px); 
+            margin-top: -55px; 
             border: none;
             display: block;
         }
@@ -137,7 +116,7 @@
         }
     }
 
-    // 4. OPEN TEST
+    // 4. OPEN TEST (Smart Detection & Fit)
     function openTest(num) {
         const iframe = document.getElementById('test-iframe');
         const container = document.getElementById('test-frame-container');
@@ -149,14 +128,14 @@
         const url1 = `test${num}.html`;
         iframe.src = url1;
 
-        // Space/No-Space detection
+        // Space/No-space smart fix
         fetch(url1).then(r => { if(!r.ok) iframe.src = `test ${num}.html`; })
                    .catch(() => iframe.src = `test ${num}.html`);
 
         backButton.show();
     }
 
-    // Back Button
+    // Back Button Logic
     backButton.onClick(() => {
         document.getElementById('test-frame-container').style.display = 'none';
         document.getElementById('main-view').style.display = 'block';
@@ -164,5 +143,6 @@
         backButton.hide();
     });
 </script>
+
 </body>
 </html>
